@@ -1,4 +1,4 @@
-import { getAttribute, isStateOn, isStateRequiringAttention, formatDateTime, createElement, getStateSurfaceColor, getState, isTimerEntity, timerTimeRemaining, computeDisplayTimer, startElementTimerInterval, stopElementTimerInterval, formatNumericValue, getTemperatureUnit } from "../../tools/utils.js";
+import { getAttribute, isStateOn, isStateRequiringAttention, formatDateTime, createElement, getStateSurfaceColor, getState, isTimerEntity, timerTimeRemaining, computeDisplayTimer, startElementTimerInterval, stopElementTimerInterval, isColorLight, getTemperatureUnit, formatNumericValue } from "../../tools/utils.js";
 import { applyScrollingEffect } from "../../tools/text-scrolling.js";
 import { getIcon, getLightColorSignature, getImage } from "../../tools/icon.js";
 import { addActions, addFeedback } from "../../tools/tap-actions.js";
@@ -188,6 +188,7 @@ export function updateBackground(element, options) {
     if (element.style.getPropertyValue('--bubble-sub-button-light-background-color')) {
       element.style.removeProperty('--bubble-sub-button-light-background-color');
     }
+    element.classList.remove('bright-background');
     return;
   }
 
@@ -230,6 +231,10 @@ export function updateBackground(element, options) {
     const currentColor = element.style.getPropertyValue('--bubble-sub-button-light-background-color');
     if (currentColor !== newColor || colorChanged) {
       element.style.setProperty('--bubble-sub-button-light-background-color', newColor);
+      
+      // Apply bright-background class if the new color is light (for dark text contrast)
+      const isBright = isColorLight(newColor, 0.5);
+      element.classList.toggle('bright-background', isBright);
     }
 
     if (!element.classList.contains('background-on')) {
@@ -244,6 +249,7 @@ export function updateBackground(element, options) {
     if (element.style.getPropertyValue('--bubble-sub-button-light-background-color')) {
       element.style.removeProperty('--bubble-sub-button-light-background-color');
     }
+    element.classList.remove('bright-background');
   }
 }
 
@@ -557,4 +563,3 @@ export function ensureNewSubButtonsSchemaObject(config) {
   _sectionedCache.set(config, { subRef, mainRef, bottomRef, result });
   return result;
 }
-
